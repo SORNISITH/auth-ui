@@ -10,7 +10,7 @@ import "github.com/a-h/templ"
 import templruntime "github.com/a-h/templ/runtime"
 
 import (
-	"github.com/SORNISTH/auth-ui/config"
+	"github.com/SORNISITH/auth-ui/config"
 )
 
 func HTML(prop *config.Path, title string) templ.Component {

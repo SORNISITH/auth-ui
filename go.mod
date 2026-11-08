@@ -1,4 +1,4 @@
-module github.com/SORNISTH/auth-ui
+module github.com/SORNISITH/auth-ui
 
 go 1.27.3
 

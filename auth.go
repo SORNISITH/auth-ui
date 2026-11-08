@@ -3,8 +3,8 @@ package authui
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/a-h/templ"
-	"github.com/SORNISTH/auth-ui/config"
-	"github.com/SORNISTH/auth-ui/ux"
+	"github.com/SORNISITH/auth-ui/config"
+	"github.com/SORNISITH/auth-ui/ux"
 )
 
 type Config struct {
