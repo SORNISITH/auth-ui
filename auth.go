@@ -3,18 +3,21 @@ package authui
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/a-h/templ"
-	"nz.com/authui/config"
-	"nz.com/authui/ux"
+"github.com/SORNISTH/auth-ui/config"
+"github.com/SORNISTH/auth-ui/ux"
 )
+
 type Config struct {
 		Router 	gin.IRouter
 		Path  config.Path
 		Style config.Style
 }
+
 func (c *Config) Init()  {
 	p := c.Path
 	p.DefaultPath() 
 	p.Style = &c.Style 
+
 	c.Router.GET(p.LoginPage, page(&p, ux.Page_Login))
 	c.Router.GET(p.RegisterPage, page(&p, ux.Page_Register))
 	c.Router.GET(p.LoginAdminPage, page(&p, ux.Page_LoginAdmin))

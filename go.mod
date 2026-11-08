@@ -1,4 +1,4 @@
-module nz.com/authui
+module github.com/SORNISTH/auth-ui
 
 go 1.27.3
 

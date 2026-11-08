@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"regexp"
 	"strings"
-	"nz.com/authui/config"
+"github.com/SORNISTH/auth-ui/config"
 	"github.com/a-h/templ"
 )
 
