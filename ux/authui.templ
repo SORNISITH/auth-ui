@@ -1,0 +1,410 @@
+package ux
+
+import (
+	"nz.com/authui/config"
+)
+
+templ HTML(prop *config.Path, title string) {
+	<!DOCTYPE html>
+	<html lang="en">
+		<head hx-head="append">
+			<title>{ title }</title>
+			<meta charset="UTF-8"/>
+			<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+			<meta http-equiv="Accept-CH" content="DPR, Viewport-Width, Width"/>
+			@styles()
+		</head>
+		<body hx-boost="true" style={ styleVars(prop.Style) }>
+			{ children... }
+		</body>
+	</html>
+}
+
+templ Layout_Container(prop *config.Path) {
+	<div class="ux-page" hx-history="false">
+		{ children... }
+	</div>
+}
+
+
+templ Page_Welcome(prop *config.Path) {
+	@HTML(prop, "Welcome") {
+		@Layout_Container(prop) {
+			@WelcomeBackUser(prop)
+		}
+	}
+}
+
+templ Page_Login(prop *config.Path) {
+	@HTML(prop, "Login") {
+		@Layout_Container(prop) {
+			@LoginUser(prop)
+		}
+	}
+}
+
+templ Page_LoginAdmin(prop *config.Path) {
+	@HTML(prop, "Admin") {
+		@Layout_Container(prop) {
+			@LoginAdmin(prop)
+		}
+	}
+}
+
+templ Page_Register(prop *config.Path) {
+	@HTML(prop, "Register") {
+		@Layout_Container(prop) {
+			@Register(prop)
+		}
+	}
+}
+
+
+templ InputUserName() {
+	<div class="ux-field">
+		<label class="ux-label">
+			<svg class="ux-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+				<g stroke-linejoin="round" stroke-linecap="round" stroke-width="2" fill="none" stroke="currentColor">
+					<path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path>
+					<circle cx="12" cy="7" r="4"></circle>
+				</g>
+			</svg>
+			<input
+				class="ux-input"
+				type="text"
+				name="username"
+				required
+				placeholder="Username"
+				pattern="[A-Za-z][A-Za-z0-9\-]*"
+				autocomplete="off"
+				minlength="3"
+				maxlength="30"
+				title="Only letters, numbers or dash"
+			/>
+		</label>
+		<div class="ux-hint">Must be 3 to 30 characters</div>
+	</div>
+}
+
+templ InputEmail() {
+	<div class="ux-field">
+		<label class="ux-label">
+			<svg class="ux-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+				<g stroke-linejoin="round" stroke-linecap="round" stroke-width="2" fill="none" stroke="currentColor">
+					<rect width="20" height="16" x="2" y="4" rx="2"></rect>
+					<path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"></path>
+				</g>
+			</svg>
+			<input class="ux-input" type="text" name="email" placeholder="Email / Phone" required/>
+		</label>
+		<div class="ux-hint">Enter valid phone or email address</div>
+	</div>
+}
+
+templ InputPassword(name string, placeholder string) {
+	<div class="ux-field">
+		<label class="ux-label">
+			<svg class="ux-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+				<g stroke-linejoin="round" stroke-linecap="round" stroke-width="2" fill="none" stroke="currentColor">
+					<path d="M2.586 17.414A2 2 0 0 0 2 18.828V21a1 1 0 0 0 1 1h3a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h1a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h.172a2 2 0 0 0 1.414-.586l.814-.814a6.5 6.5 0 1 0-4-4z"></path>
+					<circle cx="16.5" cy="7.5" r=".5" fill="currentColor"></circle>
+				</g>
+			</svg>
+			<input
+				class="ux-input"
+				type="password"
+				name={ name }
+				required
+				placeholder={ placeholder }
+				minlength="8"
+				title="Must be equal or more than 8 characters"
+			/>
+		</label>
+		<p class="ux-hint">Must be more than 8 characters</p>
+	</div>
+}
+
+// Forms
+
+templ Form(endpoint string) {
+	<form
+		method="post"
+		action={ templ.URL(endpoint) }
+		hx-post={ endpoint }
+		hx-target="#msg"
+		hx-validate="true"
+		hx-indicator="#login-process"
+		hx-swap="innerHTML"
+		class="ux-form"
+	>
+		{ children... }
+	</form>
+}
+
+templ ErrorReceiver() {
+	<section id="msg" class="ux-msg"></section>
+}
+
+templ LoginForm(endpoint string, comp templ.Component) {
+	@Form(endpoint) {
+		@InputEmail()
+		@InputPassword("password", "Password")
+		@comp
+		@ErrorReceiver()
+	}
+}
+
+templ RegisterForm(endpoint string, comp templ.Component) {
+	@Form(endpoint) {
+		@InputEmail()
+		@InputUserName()
+		@InputPassword("password", "Password")
+		@comp
+		@ErrorReceiver()
+	}
+}
+
+templ ButtonSubmit(btnname string) {
+	<button type="submit" class="ux-btn ux-btn-primary">
+		<span id="login-process" class="htmx-indicator ux-spinner"> </span>
+		{ btnname }
+	</button>
+}
+
+
+templ LoginCard() {
+	<div class="ux-card">
+		{ children... }
+	</div>
+}
+
+templ LoginTittle(t string) {
+	<div class="ux-title-row">
+		<h1 class="ux-title">{ t }</h1>
+	</div>
+}
+
+templ ForgotAndRegisterPanel(btnname string, route string) {
+	<div class="ux-row">
+		<a href={ templ.URL(propForget(route)) } class="ux-link">Forgot password?</a>
+		<a
+			href={ templ.URL(route) }
+			hx-get={ route }
+			hx-target="body"
+			hx-swap="innerHTML"
+			hx-push-url="true"
+			class="ux-link ux-link-strong"
+		>{ btnname }</a>
+	</div>
+}
+
+templ LoginAdditional(prop *config.Path) {
+	<div class="ux-or">
+		<div class="ux-or-line"></div>
+		<span class="ux-or-text">or</span>
+		<div class="ux-or-line"></div>
+	</div>
+	<div class="ux-stack">
+		<button type="button" class="ux-btn ux-btn-outline">
+			<svg aria-label="Google logo" width="16" height="16" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+				<g>
+					<path d="m0 0H512V512H0" fill="#fff"></path>
+					<path fill="#34a853" d="M153 292c30 82 118 95 171 60h62v48A192 192 0 0190 341"></path>
+					<path fill="#4285f4" d="m386 400a140 175 0 0053-179H260v74h102q-7 37-38 57"></path>
+					<path fill="#fbbc02" d="m90 341a208 200 0 010-171l63 49q-12 37 0 73"></path>
+					<path fill="#ea4335" d="m153 219c22-69 116-109 179-50l55-54c-78-75-230-72-297 55"></path>
+				</g>
+			</svg>
+			Login with Google
+		</button>
+		<a
+			href={ templ.URL(prop.LoginAdminPage) }
+			hx-get={ prop.LoginAdminPage }
+			hx-target="body"
+			hx-swap="innerHTML"
+			hx-push-url="true"
+			class="ux-btn ux-btn-outline"
+		>
+			<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+				<path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"></path>
+				<path d="m9 12 2 2 4-4"></path>
+			</svg>
+			Sign as Admin
+		</a>
+	</div>
+}
+
+
+templ LoginUser(prop *config.Path) {
+	@LoginCard() {
+		@LoginTittle("Sign In")
+		@LoginForm(prop.LoginBackend, ButtonSubmit("Sign in"))
+		@ForgotAndRegisterPanel("Register", prop.RegisterPage)
+		@LoginAdditional(prop)
+	}
+}
+
+
+templ LoginAdmin(prop *config.Path) {
+	@LoginCard() {
+		@LoginTittle("Admin Dashboard")
+		<p class="ux-sub">Sign in to administrative controls.</p>
+		@LoginForm(prop.LoginAdminBackend, ButtonSubmit("Admin Sign in"))
+		@ForgotAndRegisterPanel("Login as Client", prop.LoginPage)
+	}
+}
+
+templ Register(prop *config.Path) {
+	@LoginCard() {
+		@LoginTittle("Create Account")
+		<p class="ux-sub">Get started with your free account.</p>
+		@RegisterForm(prop.RegisterBackend, ButtonSubmit("Register"))
+		<div class="ux-row-center">
+			<a
+				href={ templ.URL(prop.LoginPage) }
+				hx-get={ prop.LoginPage }
+				hx-target="body"
+				hx-swap="innerHTML"
+				hx-push-url="true"
+				class="ux-link"
+			>Already have an account? Sign in</a>
+		</div>
+	}
+}
+
+templ WelcomeBackUser(prop *config.Path) {
+	@LoginCard() {
+		<div class="ux-welcome">
+			<div class="ux-avatar">
+				<img src="/static/default-avatar.png" fetchpriority="high" alt="Default profile photo"/>
+			</div>
+			<p class="ux-welcome-text">Welcome back</p>
+			<div class="ux-welcome-line"></div>
+		</div>
+		<div class="ux-stack">
+			<a
+				href={ templ.URL("/") }
+				hx-get="/"
+				hx-push-url="true"
+				hx-swap="innerMorph"
+				hx-target="body"
+				class="ux-btn ux-btn-primary"
+			>
+				Continue
+			</a>
+			<a href={ templ.URL("/login") } class="ux-link ux-link-block">
+				Change Account
+			</a>
+		</div>
+	}
+}
+
+
+
+
+
+// ---- Forgot password -------------------------------------------------
+
+templ Page_Forget(prop *config.Path) {
+	@HTML(prop, "Forgot password") {
+		@Layout_Container(prop) {
+			@ForgetUser(prop)
+		}
+	}
+}
+
+templ Page_ForgetSent(prop *config.Path, email string) {
+	@HTML(prop, "Check your email") {
+		@Layout_Container(prop) {
+			@ForgetSent(prop, email)
+		}
+	}
+}
+
+templ Page_Reset(prop *config.Path) {
+	@HTML(prop, "Reset password") {
+		@Layout_Container(prop) {
+			@ResetUser(prop, prop.TokenReset)
+		}
+	}
+}
+
+// Step 1: ask for the email
+templ ForgetUser(prop *config.Path) {
+	@LoginCard() {
+		@LoginTittle("Forgot password")
+		<p class="ux-sub">Enter your email and we will send you a link to reset your password.</p>
+		<form
+			method="post"
+			action={ templ.URL(prop.ForgetBackend) }
+			hx-post={ prop.ForgetBackend }
+			hx-target="closest .ux-card"
+			hx-swap="outerHTML"
+			hx-validate="true"
+			hx-indicator="#login-process"
+			class="ux-form"
+		>
+			@InputEmail()
+			@ButtonSubmit("Send reset link")
+			@ErrorReceiver()
+		</form>
+		<div class="ux-row-center">
+			<a
+				href={ templ.URL(prop.LoginPage) }
+				hx-get={ prop.LoginPage }
+				hx-target="body"
+				hx-swap="innerHTML"
+				hx-push-url="true"
+				class="ux-link"
+			>Back to sign in</a>
+		</div>
+	}
+}
+
+// Step 2: confirmation shown after the email is sent
+templ ForgetSent(prop *config.Path, email string) {
+	@LoginCard() {
+		<div class="ux-welcome">
+			<svg class="ux-icon" style="width:2.5rem;height:2.5rem;opacity:1;" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+				<g stroke-linejoin="round" stroke-linecap="round" stroke-width="2" fill="none" stroke="currentColor">
+					<rect width="20" height="16" x="2" y="4" rx="2"></rect>
+					<path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"></path>
+				</g>
+			</svg>
+			<h1 class="ux-title">Check your email</h1>
+			<p class="ux-sub" style="text-align:center;margin:0;">
+				If an account exists for <strong>{ email }</strong>, a reset link has been sent.
+				The link expires soon, so use it right away.
+			</p>
+		</div>
+		<div class="ux-divider"></div>
+		<div class="ux-stack">
+			<a
+				href={ templ.URL(prop.LoginPage) }
+				hx-get={ prop.LoginPage }
+				hx-target="body"
+				hx-swap="innerHTML"
+				hx-push-url="true"
+				class="ux-btn ux-btn-primary"
+			>Back to sign in</a>
+			<a href={ templ.URL(prop.ForgetPage) } class="ux-link ux-link-block">
+				Did not get it? Try again
+			</a>
+		</div>
+	}
+}
+
+// Step 3: the page the email link opens (new password)
+templ ResetUser(prop *config.Path, token string) {
+	@LoginCard() {
+		@LoginTittle("Set new password")
+		<p class="ux-sub">Choose a new password for your account.</p>
+		@Form(prop.ResetBackend) {
+			<input type="hidden" name="token" value={ token }/>
+			@InputPassword("password", "New password")
+			@InputPassword("confirm", "Confirm new password")
+			@ButtonSubmit("Reset password")
+			@ErrorReceiver()
+		}
+	}
+}
