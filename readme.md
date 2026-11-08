@@ -2,12 +2,11 @@
 module login UI   for [Gin](https://github.com/gin-gonic/gin), 
 built with [templ](https://templ.guide) and [htmx](https://htmx.org).
 
-
 ## Requirements
 - Go 1.21+ 
+- optional : htmx  if you want butter spa 
 - optional  : [templ](https://templ.guide)
-- templ generate  // if you edit the templ file
-- optiopnal : htmx loaded on your pages if you want butter spa 
+- templ generate   // if you edit the templ file
 
 ## Quick start
 ```go
@@ -20,17 +19,12 @@ import (
 )
 
 func main() {
-	r := gin.Default()
+	router := gin.Default()
 
-	m := authui.Module{
-		Router: r,
-		Path: config.Path{
-			Style: &config.Style{Theme: "mono"},
-		},
-	}
-	m.Init() 
+	a := authui.Module{ Router: router }
+	a.Init() 
 
-	r.Run(":8080")
+	router.Run(":8080")
 }
 ```
 

@@ -6,14 +6,12 @@ import (
 	"nz.com/authui/config"
 	"nz.com/authui/ux"
 )
-
 type Config struct {
 		Router 	gin.IRouter
 		Path  config.Path
 		Style config.Style
 }
-
-func (c *Config) Init() {
+func (c *Config) Init()  {
 	p := c.Path
 	p.DefaultPath() 
 	p.Style = &c.Style 
